@@ -28,28 +28,41 @@
     <body>
         <h1>Feedback form</h1>
     <form>
-        <div class="control">
-          <label>Full name <span class="required">*</span></label><input id="name" name="name" type="text" />
+      <div class="control">
+          <label for="fullname">Full name 
+            <span aria-hidden="true">*</span></label>
+          <input type="text" id="fullname" name="fullname" aria-required="true"aria-labelledby="nameInstructions" required>
+          <span id="nameInstructions" class="sr-only">Please write your full name</span>
         </div>
         <div class="control">
-          <label>Biography</label><textarea id="biography" name="biography" type="text"></textarea>
-          <span>Include examples on your skills in JavaScript.</span>
+          <label for="biography">Biography <span class="required">*</span></label>
+              <textarea id="biography" name="biography" aria-required="true" aria-describedby="biographyHelp"></textarea> 
+              <span id="biographyHelp">Include examples of your skills in JavaScript.</span> 
         </div>
-        
-          <div>Gender</div>
-          <div class="control">
-            <input id="gender_male" name="gender" type="radio" value="male" /><label>Male</label>
+        <fieldset>
+          <legend>Gender<span class="required">*</legend>
+          <div>
+            <input type ="radio" id="gender_male" name="gender" value="male" />
+            <label for ="male">Male</label>
           </div>
-          <div class="control">
-            <input id="gender_female" name="gender" type="radio" value="female" /><label>Female</label>
+          <div>
+            <input type ="radio" id="gender_female" name="gender" value="female" />
+            <label for ="female">Female</label>
           </div>
+
+        </fieldset>
         
         <div class="control">
-          <input id="accept_agbs" name="accept_agbs" type="checkbox" value="1" /><label>I accept the terms and conditions</label>
+          <input id="accept_agbs" name="accept_agbs" type="checkbox" value="1" aria-required="true" required />
+          <label for="accept_agbs">I accept the terms and conditions
+            <span class="required">*</span></label>
+            <span id="termsHelp" class="sr-only"><br>You must accept the terms and conditions before submitting.</span>
+          </label>
         </div>
         <div class="control">
           <input name="validate" type="hidden" value="1" /><input type="submit" value="Register" />
         </div>
+
       </form>
       
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -71,13 +84,23 @@
         };
       
         validateInput = function validateInput(input, message) {
-          var $elementToDescribe, $error, $errorContainer, $fieldset, $input, $referencedElement, value;
+          var $elementToDescribe, $error, $errorContainer, $input, value;
           $input = $('[name="' + input + '"]');
       
-          if ((value = $.urlParam(input)) === null) {
-            if ($('fieldset.errors').length === 0) {
-              $('form').prepend('<fieldset class="errors"><legend>Errors</legend><ul></ul></fieldset>');
-            }
+          if (value === "") {
+    // If there's already an error message, don't duplicate it
+    if ($input.next('.error').length === 0) {
+      // Create and display the error message
+      $error = $('<p class="error">' + message + '</p>');
+      $input.after($error);
+    }
+    return false;  // Validation failed
+  } else {
+    // Remove the error message if the input is valid
+    $input.next('.error').remove();
+    return true;  // Validation passed
+  }
+
       
             $referencedElement = null;
             $elementToDescribe = null;
